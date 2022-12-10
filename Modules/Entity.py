@@ -34,13 +34,11 @@ class Entity:
         self.client.publish(self.config_topic, payload)
 
     def send_state(self):
-        payload = {"cpu_usage": self.state }
+        key = self.value_template.split("{{ value_json.")[1][:-2]
+        payload = {key: self.state }
         self.client.publish(self.state_topic, json.dumps(payload))
 
-    def update_state(self, state):
-        self.state = state
-
     def update_and_send_state(self, state):
-        self.update_state(state)
+        self.state = state
         self.send_state(state)    
      
