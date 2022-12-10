@@ -1,0 +1,5 @@
+MQTT_HOST = ""
+MQTT_PORT = 0
+MQTT_USER = ""
+MQTT_PASS = ""
+
