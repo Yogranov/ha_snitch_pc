@@ -1,5 +1,5 @@
 import psutil
-import Entity
+from Modules import Entity
 
 DEFAULT_ICON = "mdi:cpu-64-bit"
 DEFAULT_UNIT_OF_MEASUREMENT = "%"

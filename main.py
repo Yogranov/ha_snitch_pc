@@ -1,8 +1,7 @@
 from time import sleep
 import paho.mqtt.client as paho
 
-import CpuUsage
-import Notifier
+from Modules import Notifier, CpuUsage
 
 import env_secrets
 
