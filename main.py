@@ -12,11 +12,13 @@ client.connect(env_secrets.MQTT_HOST)
 PC_NOTIFICATION_TOPIC = "notify/yogev_pc"
 notifier = Notifier.Notifier(client, PC_NOTIFICATION_TOPIC)
 notifier.subscribe_and_listen()
+print(f"Notifier subscribed to topic: {PC_NOTIFICATION_TOPIC}")
 
 cpu_usage = CpuUsage.CpuUsage(client, "Yogev PC CPU usage", "yogev_pc_cpu_usage")
 cpu_usage.send_config()
 
-
+print("Starting main loop")
 while True:
-    cpu_usage.update_and_send_state()
-    sleep(1)
+    cpu_usage.periodic()
+    sleep(5)
+
