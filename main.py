@@ -1,7 +1,7 @@
 from time import sleep
 import paho.mqtt.client as paho
 
-from Modules import Notifier, CpuUsage
+from Modules import CameraChecker, Notifier, CpuUsage, MemoryUsage, MicrophoneChecker
 
 import env_secrets
 
@@ -17,8 +17,16 @@ print(f"Notifier subscribed to topic: {PC_NOTIFICATION_TOPIC}")
 cpu_usage = CpuUsage.CpuUsage(client, "Yogev PC CPU usage", "yogev_pc_cpu_usage")
 cpu_usage.send_config()
 
+camera_checker = CameraChecker.CameraChecker(client, "Yogev PC Camera", "yogev_pc_camera")
+camera_checker.send_config()
+
+microphone_checker = MicrophoneChecker.MicrophoneChecker(client, "Yogev PC Microphone", "yogev_pc_microphone")
+microphone_checker.send_config()
+
 print("Starting main loop")
 while True:
     cpu_usage.periodic()
+    camera_checker.periodic()
+    microphone_checker.periodic()
     sleep(5)
 
