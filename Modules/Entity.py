@@ -15,8 +15,8 @@ class Entity:
     config_topic: str
     state_topic: str
 
-    state = 0
-    last_sent_state = 0
+    state = None
+    last_sent_state = None
     tolerance : int = 0
 
 
@@ -40,8 +40,11 @@ class Entity:
         print(f"Config published to topic: {self.config_topic}")
 
     def send_state(self):
+        print(f"Sending state: {self.state} to topic: {self.state_topic}")
         key = self.value_template.split("{{ value_json.")[1][:-3]
         payload = {key: self.state }
+
+        print(f"Payload: {json.dumps(payload)}")
         self.client.publish(self.state_topic, json.dumps(payload))
 
         self.last_sent_state = self.state
@@ -57,7 +60,23 @@ class Entity:
     def periodic(self):
         self.update_state()
         print(f"State: {self.state}, Last state: {self.last_sent_state}")
-        should_send_state = abs(self.last_sent_state - self.state) >= self.tolerance
-        print(f"Should send state: {should_send_state}")
-        if should_send_state:
-            self.send_state()
+
+        if self.entity_type == "sensor":
+            should_send_state = abs(self.last_sent_state - self.state) >= self.tolerance
+            print(f"Should send state: {should_send_state}")
+            if should_send_state:
+                self.send_state()
+
+        elif self.entity_type == "binary_sensor":
+            if self.state == True:
+                self.state = "ON"
+            elif self.state == False:
+                self.state = "OFF"
+                
+            if self.state != self.last_sent_state:
+                self.send_state()
+
+        else:
+            print("Entity type not supported")
+            return
+
