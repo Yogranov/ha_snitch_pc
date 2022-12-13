@@ -15,8 +15,8 @@ class Entity:
     config_topic: str
     state_topic: str
 
-    state = None
-    last_sent_state = None
+    state = 0
+    last_sent_state = 0
     tolerance : int = 0
 
 
