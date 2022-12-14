@@ -17,7 +17,7 @@ class Entity:
     state_topic: str
 
     state = 0
-    last_sent_state = 0
+    last_sent_state = None
     tolerance : int = 0
 
 
@@ -63,7 +63,7 @@ class Entity:
         # print(f"State: {self.state}, Last state: {self.last_sent_state}")
 
         if self.entity_type == "sensor":
-            should_send_state = abs(self.last_sent_state - self.state) >= self.tolerance
+            should_send_state = self.last_sent_state == None or abs(self.last_sent_state - self.state) >= self.tolerance
             # print(f"Should send state: {should_send_state}")
             if should_send_state:
                 self.send_state()
@@ -74,7 +74,8 @@ class Entity:
             elif self.state == False:
                 self.state = "OFF"
                 
-            if self.state != self.last_sent_state:
+            should_send_state = self.last_sent_state == None or self.state != self.last_sent_state
+            if should_send_state:
                 self.send_state()
 
         else:
