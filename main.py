@@ -4,7 +4,6 @@ from Modules import CameraChecker, MicrophoneChecker, CpuUsage, MemoryUsage, Mic
 import env_secrets
 
 PC_NOTIFICATION_TOPIC = "notify/yogev_pc"
-REPUBLISH_CONFIG_TOPIC = "general/republish_config"
 
 # Create a client instance
 client = paho.Client()
@@ -21,17 +20,21 @@ gpu_usage = GpuUsage.GpuUsage(client)
 
 
 # Publish config
-camera_checker.send_config()
-microphone_checker.send_config()
-cpu_usage.send_config()
-memory_usage.send_config()
-gpu_temperature.send_config()
-gpu_usage.send_config()
+def publish_config():
+    camera_checker.send_config()
+    microphone_checker.send_config()
+    cpu_usage.send_config()
+    memory_usage.send_config()
+    gpu_temperature.send_config()
+    gpu_usage.send_config()
     
 
 # Subscribers
-notifier = Notifier.Notifier(client, PC_NOTIFICATION_TOPIC)
+notifier = Notifier.Notifier(client, PC_NOTIFICATION_TOPIC, publish_config)
 print(f"Notifier subscribed to topic: {PC_NOTIFICATION_TOPIC}")
+notifier.listen()
+
+publish_config()
 
 print("Starting main loop")
 while True:

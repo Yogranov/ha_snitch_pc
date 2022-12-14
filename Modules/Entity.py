@@ -35,6 +35,7 @@ class Entity:
         self.state_topic = DEFAULT_TOPIC + self.entity_type + "/" + self.name + "/state"
 
     def send_config(self):
+        self.last_sent_state = None
         payload = '{"name": "' + self.name + '", "state_topic": "' + self.state_topic + '", "unit_of_measurement": "' + self.unit_of_measurement + '", "value_template": "' + self.value_template + '", "icon": "' + self.icon + '" }'
         # payload = '{"state_class": "measurement", "name": "' + self.friendly_name + '", "state_topic": "' + self.state_topic + '", "unit_of_measurement": "' + self.unit_of_measurement + '", "value_template": "' + self.value_template + '", "icon": "' + self.icon + '" }'
         self.client.publish(self.config_topic, payload)

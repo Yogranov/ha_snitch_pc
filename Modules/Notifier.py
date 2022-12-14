@@ -7,10 +7,12 @@ class Notifier:
     client : paho.Client = None
     topic: str = None
     listener_thread: threading.Thread = None
+    callable = None
 
-    def __init__(self, client, topic, auto_subscribe = False):
+    def __init__(self, client, topic, callback = None, auto_subscribe = True):
         self.client = client
         self.topic = topic
+        self.callable = callback
         self.listener_thread = threading.Thread(target=client.loop_forever)
         print("Notifier created")
 
@@ -29,12 +31,16 @@ class Notifier:
     def on_message(self, client, userdata, msg):
         print(f"Message received [{msg.topic}]: {msg.payload}")
 
-        # get parameters
-        jsonObj = json.loads(msg.payload)
-        title = jsonObj['title']
-        message = jsonObj['msg']
+        if b"callback" in msg.payload:
+            if self.callable is not None:
+                self.callable()
+        else:
+            # get parameters
+            jsonObj = json.loads(msg.payload)
+            title = jsonObj['title']
+            message = jsonObj['msg']
 
-        notify(title, message, duration="short")
+            notify(title, message, duration="short")
 
     def listen(self):
         print("Starting listener thread")
