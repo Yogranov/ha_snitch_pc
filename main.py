@@ -1,40 +1,46 @@
 from time import sleep
 import paho.mqtt.client as paho
-
-from Modules import CameraChecker, MicrophoneChecker, CpuUsage, MemoryUsage, MicrophoneChecker, Notifier, GpuTemperature, GpuUsage
-
+from Modules import CameraChecker, MicrophoneChecker, CpuUsage, MemoryUsage, MicrophoneChecker, Notifier, GpuTemperature, GpuUsage, MqttListener
 import env_secrets
 
+PC_NOTIFICATION_TOPIC = "notify/yogev_pc"
+REPUBLISH_CONFIG_TOPIC = "general/republish_config"
+
+# Create a client instance
 client = paho.Client()
 client.username_pw_set(env_secrets.MQTT_USER, env_secrets.MQTT_PASS)
 client.connect(env_secrets.MQTT_HOST)
 
-PC_NOTIFICATION_TOPIC = "notify/yogev_pc"
+# Create sensors
+camera_checker = CameraChecker.CameraChecker(client)
+microphone_checker = MicrophoneChecker.MicrophoneChecker(client)
+cpu_usage = CpuUsage.CpuUsage(client)
+memory_usage = MemoryUsage.MemoryUsage(client)
+gpu_temperature = GpuTemperature.GpuTemperature(client)
+gpu_usage = GpuUsage.GpuUsage(client)
+
+# Publish config
+def publish_configs():
+    camera_checker.send_config()
+    microphone_checker.send_config()
+    cpu_usage.send_config()
+    memory_usage.send_config()
+    gpu_temperature.send_config()
+    gpu_usage.send_config()
+
+
+# Subscribers
 notifier = Notifier.Notifier(client, PC_NOTIFICATION_TOPIC)
 notifier.subscribe_and_listen()
 print(f"Notifier subscribed to topic: {PC_NOTIFICATION_TOPIC}")
 
-
-camera_checker = CameraChecker.CameraChecker(client, "Yogev PC Camera", "yogev_pc_camera")
-camera_checker.send_config()
-
-microphone_checker = MicrophoneChecker.MicrophoneChecker(client, "Yogev PC Microphone", "yogev_pc_microphone")
-microphone_checker.send_config()
-
-cpu_usage = CpuUsage.CpuUsage(client, "Yogev PC CPU usage", "yogev_pc_cpu_usage")
-cpu_usage.send_config()
-
-memory_usage = MemoryUsage.MemoryUsage(client, "Yogev PC Memory usage", "yogev_pc_memory_usage")
-memory_usage.send_config()
-
-gpu_temperature = GpuTemperature.GpuTemperature(client, "Yogev PC GPU temperature", "yogev_pc_gpu_temperature")
-gpu_temperature.send_config()
-
-gpu_usage = GpuUsage.GpuUsage(client, "Yogev PC GPU usage", "yogev_pc_gpu_usage")
-gpu_usage.send_config()
+mqtt_listener = MqttListener.MqttListener(client, REPUBLISH_CONFIG_TOPIC, publish_configs, auto_subscribe=True)
+print(f"MqttListener subscribed to topic: {REPUBLISH_CONFIG_TOPIC}")
 
 
-
+print("Publish configs")
+publish_configs()
+    
 print("Starting main loop")
 while True:
     cpu_usage.periodic()
@@ -45,4 +51,3 @@ while True:
     gpu_usage.periodic()
 
     sleep(5)
-
