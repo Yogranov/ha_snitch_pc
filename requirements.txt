@@ -2,3 +2,4 @@ GPUtil==1.4.0
 paho-mqtt==1.6.1
 psutil==5.9.4
 win11toast==0.31
+pyinstaller==5.7.0

@@ -3,3 +3,6 @@ venv
 test.py
 env_secrets.py
 log.txt
+ha_snitch_pc.exe
+dist
+build

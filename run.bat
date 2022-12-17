@@ -1,1 +1,0 @@
-D:\coding\pythonProjects\ha_snitch_pc\venv\Scripts\pythonw.exe D:\coding\pythonProjects\ha_snitch_pc\main.py > log.txt 2>&1

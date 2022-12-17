@@ -1,0 +1,1 @@
+Stop-process -name ha_snitch_pc -Force 
