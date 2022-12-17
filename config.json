@@ -1,0 +1,11 @@
+{
+    "pc_topic": "yogev_pc/command",
+    "active_sensors": {
+        "CameraChecker": true,
+        "MicrophoneChecker": true,
+        "CpuUsage": true,
+        "MemoryUsage": true,
+        "GpuTemperature": true,
+        "GpuUsage": true
+    }
+}
