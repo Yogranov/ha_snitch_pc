@@ -22,18 +22,26 @@ with open("config.json") as f:
     options = json.load(f)
 
 # Create a client instance
+should_override = options["mqtt_broker_override"]["host"] != "ip.ip.ip.ip"
+MQTT_HOST = env_secrets.MQTT_HOST if not should_override else options["mqtt_broker_override"]["host"]
+MQTT_PORT = env_secrets.MQTT_PORT if not should_override else options["mqtt_broker_override"]["port"]
+MQTT_USER = env_secrets.MQTT_USER if not should_override else options["mqtt_broker_override"]["username"]
+MQTT_PASS = env_secrets.MQTT_PASS if not should_override else options["mqtt_broker_override"]["password"]
+
 client = paho.Client()
-client.username_pw_set(env_secrets.MQTT_USER, env_secrets.MQTT_PASS)
+client.username_pw_set(MQTT_USER, MQTT_PASS)
 
 current_retry = 0
+should_exit = False
 while True:
     try:
         current_retry += 1
         if current_retry > MAX_CONNECTION_RETRIES:
             print("Max retries reached. Exiting")
+            should_exit = True
             break
 
-        res = client.connect(env_secrets.MQTT_HOST, env_secrets.MQTT_PORT)
+        res = client.connect(MQTT_HOST, MQTT_PORT)
 
         print("Connection successful")
         break
@@ -41,7 +49,7 @@ while True:
         print(f"Connection failed. Retrying in {DURATION_BETWEEN_RETRIES} seconds")
         sleep(DURATION_BETWEEN_RETRIES)
 
-if current_retry > MAX_CONNECTION_RETRIES:
+if should_exit:
     print("Max retries reached. Exiting")
     sys.exit(1)
 

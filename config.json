@@ -1,4 +1,10 @@
 {
+    "mqtt_broker_override": {
+        "host": "ip.ip.ip.ip",
+        "port": 1883,
+        "username": "username",
+        "password": "password"
+    },
     "pc_topic": "yogev_pc/command",
     "active_sensors": {
         "CameraChecker": true,

@@ -27,6 +27,10 @@ class Subscriber:
 
     def on_connect(self, client, userdata, flags, rc):
         print(f"Connected with result code {rc}")
+        if rc == 5:
+            self.client.disconnect()
+            print("Connection refused. Wrong credentials")
+            exit(1)
 
     def register_callback(self, command, callable):
         self.callables[command] = callable
