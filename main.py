@@ -12,17 +12,38 @@ from Modules.GpuUsage import GpuUsage
 from Modules.Subscriber import Subscriber
 import env_secrets
 
+MAX_CONNECTION_RETRIES = 60
+DURATION_BETWEEN_RETRIES = 60
+
+
 # loading config file
 options = {}
 with open("config.json") as f:
     options = json.load(f)
 
-PC_NOTIFICATION_TOPIC = options["pc_topic"]
-
 # Create a client instance
 client = paho.Client()
 client.username_pw_set(env_secrets.MQTT_USER, env_secrets.MQTT_PASS)
-client.connect(env_secrets.MQTT_HOST)
+
+current_retry = 0
+while True:
+    try:
+        current_retry += 1
+        if current_retry > MAX_CONNECTION_RETRIES:
+            print("Max retries reached. Exiting")
+            break
+
+        res = client.connect(env_secrets.MQTT_HOST, env_secrets.MQTT_PORT)
+
+        print("Connection successful")
+        break
+    except:
+        print(f"Connection failed. Retrying in {DURATION_BETWEEN_RETRIES} seconds")
+        sleep(DURATION_BETWEEN_RETRIES)
+
+if current_retry > MAX_CONNECTION_RETRIES:
+    print("Max retries reached. Exiting")
+    sys.exit(1)
 
 # Create sensors
 sensors = []
@@ -39,6 +60,7 @@ def publish_config():
         sensor.send_config()
 
 # Subscriber
+PC_NOTIFICATION_TOPIC = options["pc_topic"]
 subscriber = Subscriber(client, PC_NOTIFICATION_TOPIC, {"republish_config": publish_config})
 print(f"Subscriber subscribed to topic: {PC_NOTIFICATION_TOPIC}")
 subscriber.listen()
