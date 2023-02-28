@@ -1,29 +1,25 @@
-import paho.mqtt.client as paho
-import threading
 import json
+from time import sleep
 from Modules import PcController
 
 class Subscriber:
-    client : paho.Client
-    topic: str
-    listener_thread: threading.Thread
-    callbacks: dict
-
-    def __init__(self, client, topic, callbacks = {}, auto_subscribe = True):
+    def __init__(self, client, topic, callbacks = {}):
         self.client = client
         self.topic = topic
         self.callbacks = callbacks
-        self.listener_thread = threading.Thread(target=client.loop_forever)
         print("Notifier created")
-
-        if auto_subscribe:
-            self.subscribe()
-
-    def subscribe(self):
+        # Set callback functions
         self.client.on_connect = self.on_connect
         self.client.on_message = self.on_message
-        self.client.subscribe(self.topic)
-        print("Subscribed to topic: " + self.topic)
+        self.client.on_disconnect = self.on_disconnect
+
+    def listen(self):
+        print("Listening for messages...")
+        self.client.loop_start()
+
+    def register_callback(self, command, callable):
+        self.callables[command] = callable
+        print("Registered callback for command: " + command)
 
     def on_connect(self, client, userdata, flags, rc):
         print(f"Connected with result code {rc}")
@@ -32,17 +28,16 @@ class Subscriber:
             print("Connection refused. Wrong credentials")
             exit(1)
 
-    def register_callback(self, command, callable):
-        self.callables[command] = callable
+        self.client.subscribe(self.topic)
 
-    def listen(self):
-        print("Starting listener thread")
-        self.listener_thread.start()
+    def on_disconnect(self, client, userdata, rc):
+        print(f"Disconnected with result code {rc}")
+        if rc != 0:
+            sleep(20)
+            self.client.reconnect()
+            self.client.subscribe(self.topic)
 
-    def subscribe_and_listen(self):
-        self.subscribe()
-        self.listen()
-        
+
     def on_message(self, client, userdata, msg):
         print(f"Message received [{msg.topic}]: {msg.payload}")
 
