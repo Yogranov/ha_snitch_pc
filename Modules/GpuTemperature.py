@@ -14,4 +14,8 @@ class GpuTemperature(Entity.Entity):
         super().__init__(client, friendly_name, DEFAULT_ENTITY_TYPE, DEFAULT_UNIT_OF_MEASUREMENT, DEFAULT_VALUE_TEMPLATE, icon, tolerance)
 
     def update_state(self):
-        self.state = GPUtil.getGPUs()[0].temperature
+        try:
+            if GPUtil.getGPUs():
+                self.state = GPUtil.getGPUs()[0].temperature
+        except:
+            self.state = 0
