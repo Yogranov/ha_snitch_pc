@@ -1,6 +1,7 @@
 import json
 from time import sleep
 from Modules import PcController
+import subprocess
 
 class Subscriber:
     def __init__(self, client, topic, callbacks = {}):
@@ -76,6 +77,13 @@ class Subscriber:
 
                 case "hibernate_pc":
                     PcController.PcController.hibernate()
+
+                case "update_app":
+                    print("Updating app")
+                    cmd = r"venv/Scripts/python update.py"
+                    subprocess.call(cmd)
+                    exit(0)
+
         
         except Exception as e:
             print("Error while parsing message: " + str(e))
