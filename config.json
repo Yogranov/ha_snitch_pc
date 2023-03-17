@@ -5,13 +5,13 @@
         "username": "username",
         "password": "password"
     },
-    "pc_topic": "yogev_pc/command",
+    "pc_topic": "topic/command",
     "active_sensors": {
-        "CameraChecker": true,
-        "MicrophoneChecker": true,
         "CpuUsage": true,
         "MemoryUsage": true,
-        "GpuTemperature": true,
-        "GpuUsage": true
+        "CameraChecker": false,
+        "MicrophoneChecker": false,
+        "GpuTemperature": false,
+        "GpuUsage": false
     }
 }
