@@ -9,6 +9,7 @@ from Modules.MemoryUsage import MemoryUsage
 from Modules.MicrophoneChecker import MicrophoneChecker
 from Modules.GpuTemperature import GpuTemperature
 from Modules.GpuUsage import GpuUsage
+from Modules.DriveFreeStorage import DriveFreeStorage
 from Modules.Subscriber import Subscriber
 import env_secrets
 
@@ -59,6 +60,10 @@ for sensor in options["active_sensors"]:
     sensor_name = options["active_sensors"][sensor]
     if sensor_name:
         print(f"Adding sensor: {sensor}")
+
+        if sensor == "DriveFreeStorage":
+            sensors.extend(DriveFreeStorage.create_drive_entity(client))
+
         sensor_obj = getattr(sys.modules[__name__], sensor)
         sensors.append(sensor_obj(client))
 

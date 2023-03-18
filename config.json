@@ -12,6 +12,7 @@
         "CameraChecker": false,
         "MicrophoneChecker": false,
         "GpuTemperature": false,
-        "GpuUsage": false
+        "GpuUsage": false,
+        "DriveFreeStorage": false
     }
 }
