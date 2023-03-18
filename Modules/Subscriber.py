@@ -78,6 +78,12 @@ class Subscriber:
                 case "hibernate_pc":
                     PcController.PcController.hibernate()
 
+                case "screen_off":
+                    PcController.PcController.screen_off()
+
+                case "screen_on":
+                    PcController.PcController.screen_on()
+
                 case "update_app":
                     print("Updating app")
                     cmd = r"venv/Scripts/python update.py"

@@ -1,4 +1,5 @@
 import os
+import ctypes
 from win11toast import notify
 
 class PcController:
@@ -31,3 +32,11 @@ class PcController:
     def logoff():
         print("Logging off PC")
         os.system("shutdown /l")
+
+    def screen_off():
+        print("Turning off screen")
+        ctypes.windll.user32.SendMessageW(65535, 274, 61808, 2)
+
+    def screen_on():
+        print("Turning on screen")
+        ctypes.windll.user32.SendMessageW(65535, 274, 61808, -1)

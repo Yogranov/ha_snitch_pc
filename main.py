@@ -2,6 +2,7 @@ import json
 import sys 
 import paho.mqtt.client as paho
 from time import sleep
+import os 
 
 from Modules.CameraChecker import CameraChecker
 from Modules.CpuUsage import CpuUsage
@@ -73,7 +74,7 @@ def publish_config():
         sensor.send_config()
 
 # Subscriber
-PC_NOTIFICATION_TOPIC = options["pc_topic"]
+PC_NOTIFICATION_TOPIC = os.getenv('username') + "_" + options["pc_topic"]
 subscriber = Subscriber(client, PC_NOTIFICATION_TOPIC, {"republish_config": publish_config})
 print(f"Subscriber subscribed to topic: {PC_NOTIFICATION_TOPIC}")
 subscriber.listen()
